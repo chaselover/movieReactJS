@@ -1,44 +1,29 @@
+
 import React from "react";
-import axios from "axios";
-import Movie from "./movie";
+import {HashRouter, Route} from "react-router-dom";
+import About from "./routes/About";
+import Home from "./routes/Home";
+import Detail from "./routes/Detail";
+import Navigation from "./components/Navigation";
 import "./App.css";
 
-export default class App extends React.Component {
-  // 꼭 여기에 state 전부 선언할 필요 없음. 나중에 다른곳에서 그냥 추가해도됨.
-  state = {
-    isLoading: true,
-    movies: []
-  };
+// router를 넣기위한 app초기화 Homejs? AboutJS? 뭘볼꺼야?
+// router는 겹쳐서 rendering함 /home/cooler과 /home이따로 있을때 /home/cooler에서는 /home의 component도 겹쳐서 rendering됨
+// 라우터는 URL을 비교하고 매치되면 렌더링함.
+// 그래서exact설정을 통해 겹치지 않게함.(exact는 그것만 rendering함)
+// URL을 통해 path를 지정해줄수있음. URL뒤에 /about붙히면 component About이 열림.
+// browserRouter는 Hashrouter과 비교해 /#/이 주소에 안들어감.
+// 그러나 github pages를 쓰기에는 Hashrouter가 더 용이함.
 
-  getMovies = async () => {
-    // api 사이트에 보면 sort_by명령어 등등 정렬같은거 나옴. 뒤에?sort by=방식 쓰면댐
-    const {data: {data:{movies}}} = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating");
-    // console.log(movies);
-    this.setState({movies, isLoading:false})
-    // 바로윗줄 movies는 movies:movies로 state movie: axios movies가 단축된것.
-  }
-  componentDidMount(){
-    // setTimeout(() => {
-    //   this.setState({isLoading : false});
-    // },6000);
-    this.getMovies();
-  }
-  render() {
-    const { isLoading,movies} = this.state;
-    return (
-        <section className="container">
-          {isLoading ? (
-            <div className="loader">
-            <span className="Loader__tect">Loading...</span>
-          </div>) : (
-            <div className="movies">
-              {movies.map(movie => (
-                // console.log(movies);
-                    <Movie  key={movie.id} id={movie.id} year={movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image} genres={movie.genres}></Movie>
-                  ))}
-            </div>
-          )}
-        </section>
-    )
-  }
+// Router의 모든 Route들은 props를 가진다.(Router가 전달해줌)
+// :id는 변수표시.
+function App(){
+    return <HashRouter>
+        <Navigation />
+        <Route path="/about" component={About}/>
+        <Route path="/movie/:id" component={Detail}/>
+        <Route path="/" exact="true" component={Home}/>
+    </HashRouter>
 }
+
+export default App;
